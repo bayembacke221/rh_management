@@ -37,3 +37,6 @@ spring:
     validation:
       profile:
         phone-pattern: ^(77|78|75|70)[0-9]{7}$
+
+server:
+  port: 8088

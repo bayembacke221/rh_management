@@ -11,6 +11,15 @@ import java.util.List;
 
 import static jakarta.persistence.FetchType.EAGER;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.Collection;
+import java.util.List;
+import java.security.Principal;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Getter
@@ -19,7 +28,8 @@ import static jakarta.persistence.FetchType.EAGER;
 @Table(name = "contract")
 @Data
 @NoArgsConstructor
-public class User extends BaseEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class User extends BaseEntity implements UserDetails, Principal{
 
     private String username;
     private String password;
@@ -32,5 +42,56 @@ public class User extends BaseEntity {
     private List<Role> roles;
 
     private LocalDateTime lastLogin;
-    private Boolean active;
+
+    private boolean accountLocked;
+    private boolean enabled;
+
+    @Override
+    public String getName() {
+        return email;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles
+                .stream()
+                .map(
+                        role -> new SimpleGrantedAuthority(role.getName().toString())
+                )
+                .toList();
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !accountLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public String getFullName() {
+        return this.employee.getFirstName() + " " + this.employee.getLastName();
+    }
 }

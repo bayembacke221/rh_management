@@ -13,3 +13,27 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    max-file-size: 10485760  # 10MB
+    allowed-mime-types:
+      diploma:
+        - application/pdf
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      identity:
+        - application/pdf
+        - image/jpeg
+        - image/png
+      cv:
+        - application/pdf
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    file:
+      uploads:
+        photos-output-path: ./uploads
+
+    security:
+      jwt:
+        secret-key: EzlKRzeO3KNOmxBKbrpUdaPrqtl0JAZbEUfQX798k0A=
+        expiration: 86400000
+    validation:
+      profile:
+        phone-pattern: ^(77|78|75|70)[0-9]{7}$

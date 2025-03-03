@@ -5,10 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import sn.bmbacke.rh.common.BaseEntity;
-import sn.bmbacke.rh.entity.enums.RoleEnum;
 
 import java.util.List;
-import java.util.Set;
 
 import static jakarta.persistence.FetchType.EAGER;
 
@@ -21,8 +19,7 @@ import static jakarta.persistence.FetchType.EAGER;
 @Data
 @NoArgsConstructor
 public class Role  extends BaseEntity {
-    @Enumerated(EnumType.STRING)
-    private RoleEnum name;
+    private String name;
     private String description;
     @ManyToMany(fetch = EAGER)
     @JsonBackReference

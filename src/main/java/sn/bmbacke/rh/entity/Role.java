@@ -20,7 +20,7 @@ import static jakarta.persistence.FetchType.EAGER;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "role")
+@Table(name = "roles")
 @EntityListeners(AuditingEntityListener.class)
 public class Role   {
     @Id
@@ -35,7 +35,7 @@ public class Role   {
 
     @ManyToMany(mappedBy = "roles")
     @JsonBackReference
-    private List<User> user;
+    private List<User> users;
 
     @CreatedDate
     @Column(updatable = false, nullable = false)

@@ -61,7 +61,6 @@ public class Employee extends BaseEntity {
     private Employee manager;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "id", referencedColumnName = "id", nullable = false, insertable=false, updatable=false)
+    @JoinColumn(name = "user_id")
     private User user;
 }

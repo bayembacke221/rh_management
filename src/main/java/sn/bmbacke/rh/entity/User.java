@@ -25,7 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Setter
 @SuperBuilder
-@Table(name = "contract")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -56,7 +56,7 @@ public class User extends BaseEntity implements UserDetails, Principal{
         return this.roles
                 .stream()
                 .map(
-                        role -> new SimpleGrantedAuthority(role.getName().toString())
+                        role -> new SimpleGrantedAuthority(role.getName())
                 )
                 .toList();
     }

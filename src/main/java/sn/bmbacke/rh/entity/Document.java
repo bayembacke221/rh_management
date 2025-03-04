@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @SuperBuilder
-@Table(name = "document")
+@Table(name = "documents")
 @Data
 @NoArgsConstructor
 public class Document extends BaseEntity {

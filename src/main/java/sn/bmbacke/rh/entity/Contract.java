@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-@Table(name = "contract")
+@Table(name = "contracts")
 @Data
 @NoArgsConstructor
 public class Contract extends BaseEntity {

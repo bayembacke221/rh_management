@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import sn.bmbacke.rh.entity.Role;
 import sn.bmbacke.rh.entity.Token;
 import sn.bmbacke.rh.entity.User;
 import sn.bmbacke.rh.exception.TokenNotFoundException;
@@ -57,7 +58,15 @@ public class AuthenticationService {
         claims.put("fullName", user.getFullName());
 
         var jwtToken = jwtUtil.generateToken(claims,user);
-        var roleUser = user.getRoles().stream().map(role -> (long) role.getId()).toList();
+        var roleUser = user.getRoles().stream().map(Role::getId).toList();
+        //Save token
+        Token token = Token.builder()
+                .token(jwtToken)
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusSeconds(15))
+                .user(user)
+                .build();
+        tokenRepository.save(token);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)

@@ -45,4 +45,6 @@ public interface EmployeeRepository extends GenericRepository<Employee, Long> {
             "WHERE e.departement IS NOT NULL " +
             "GROUP BY e.departement.id, e.departement.name, e.departement.code")
     List<Object[]> getEmployeeStatsByDepartment();
+
+    boolean existsByDepartement_Id(Long id);
 }

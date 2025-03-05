@@ -70,4 +70,13 @@ public class FileStorageService {
         }
         return fileName.substring(lastDotIndex + 1).toLowerCase();
     }
+
+    public void deleteFile(String path) {
+        try {
+            Files.deleteIfExists(Paths.get(path));
+            log.info("File deleted: {}", path);
+        } catch (IOException e) {
+            log.error("Failed to delete the file: {}", path, e);
+        }
+    }
 }

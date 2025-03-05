@@ -18,18 +18,6 @@ public interface EmployeeRepository extends GenericRepository<Employee, Long> {
 
     List<Employee> findByManager_Id(Long managerId);
 
-    @Query("SELECT e FROM Employee e WHERE " +
-            "(:status IS NULL OR e.status = :status) AND " +
-            "(:departementId IS NULL OR e.departement.id = :departementId) AND " +
-            "(:keyword IS NULL OR " +
-            "LOWER(e.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(e.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    Page<Employee> searchEmployees(
-            @Param("keyword") String keyword,
-            @Param("status") Status status,
-            @Param("departementId") Long departementId,
-            Pageable pageable);
-
     List<Employee> findByHireDateBetween(LocalDate startDate, LocalDate endDate);
 
     Long countByStatus(Status status);
@@ -46,5 +34,20 @@ public interface EmployeeRepository extends GenericRepository<Employee, Long> {
             "GROUP BY e.departement.id, e.departement.name, e.departement.code")
     List<Object[]> getEmployeeStatsByDepartment();
 
-    boolean existsByDepartement_Id(Long id);
+    @Query("SELECT e FROM Employee e WHERE " +
+            "(:status IS NULL OR e.status = :status) AND " +
+            "(:departementId IS NULL OR e.departement.id = :departementId) AND " +
+            "(:keyword IS NULL OR " +
+            "LOWER(e.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<Employee> searchEmployees(
+            @Param("keyword") String keyword,
+            @Param("status") Status status,
+            @Param("departementId") Long departementId,
+            Pageable pageable);
+
+    /**
+     * Vérifie si un employé appartient à un département
+     */
+    boolean existsByDepartement_Id(Long departementId);
 }

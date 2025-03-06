@@ -14,7 +14,12 @@ import java.math.BigDecimal;
 public class PositionDTO {
     private Long id;
     private String title;
+    private String description;
     private String grade;
     private BigDecimal minSalary;
     private BigDecimal maxSalary;
+    private DepartementShortDTO department;
+    private String responsibilities;
+    private String requirements;
+    private Boolean active;
 }

@@ -70,11 +70,11 @@ public class AuthenticationController {
     })
     @PostMapping("/logout")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> logout(
-            @Parameter(description = "Token d'authentification")
-            @RequestHeader(name = "Authorization") String token) {
-        String jwtToken = token.substring(7);
-        service.logout(jwtToken);
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            service.logout(token);
+        }
         return ResponseEntity.ok().build();
     }
 }

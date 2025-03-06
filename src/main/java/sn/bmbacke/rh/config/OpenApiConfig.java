@@ -14,20 +14,20 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new io.swagger.v3.oas.models.info.Info()
-                        .title("Juricov API")
+                        .title("RH API")
                         .version("1.0")
-                        .description("API for Juricov application")
+                        .description("API for RH application")
                         .license(
                                 new io.swagger.v3.oas.models.info.License()
                                         .name("Apache 2.0")
                                         .url("https://springdoc.org"))
                         .contact(new io.swagger.v3.oas.models.info.Contact()
-                                .email("bdk-bank@gmail.com")
-                                .url("https://bdk-bank.com"))
+                                .email("rh-management@gmail.com")
+                                .url("https://rh-management.com"))
                         .termsOfService("https://swagger.io/terms/"))
                 .externalDocs(new io.swagger.v3.oas.models.ExternalDocumentation()
-                        .description("Find out more about Juricov")
-                        .url("https://bdk-bank.com"));
+                        .description("Find out more about RH")
+                        .url("https://rh-management.com"));
 
     }
 }

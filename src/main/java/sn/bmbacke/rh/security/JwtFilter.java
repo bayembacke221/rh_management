@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
+import sn.bmbacke.rh.repository.TokenRepository;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -32,6 +33,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -52,6 +54,17 @@ public class JwtFilter extends OncePerRequestFilter {
             final String jwt = authHeader.substring(7);
             if (!isValidJwtFormat(jwt)) {
                 log.error("Token invalide: {}", jwt);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // Vérifier si le token a été révoqué
+            boolean isTokenRevoked = tokenRepository.findByToken(jwt)
+                    .map(token -> token.getValidatedAt() != null)
+                    .orElse(true);
+
+            if (isTokenRevoked) {
+                log.info("Token révoqué: {}", jwt);
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -78,6 +91,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
     }
+
     private boolean isValidJwtFormat(String token) {
         if (token == null) return false;
         String[] parts = token.split("\\.");

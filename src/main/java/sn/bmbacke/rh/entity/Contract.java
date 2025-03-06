@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Getter
@@ -45,6 +46,7 @@ public class Contract extends BaseEntity {
     private Integer workHoursPerWeek;
 
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<Document> documents = new ArrayList<>();
 
     @Column(name = "status", nullable = false)

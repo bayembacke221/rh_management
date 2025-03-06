@@ -68,6 +68,9 @@ public class RhManagementApplication {
             if (roleRepository.findByName("MANAGER").isEmpty()) {
                 roleRepository.save(Role.builder().name("MANAGER").build());
             }
+            if (roleRepository.findByName("EMPLOYEE").isEmpty()) {
+                roleRepository.save(Role.builder().name("EMPLOYEE").build());
+            }
         };
     }
 }

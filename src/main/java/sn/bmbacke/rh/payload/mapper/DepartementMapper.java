@@ -9,11 +9,11 @@ import sn.bmbacke.rh.entity.Employee;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring",
-        uses = {EmployeeMapper.class})
+
+@Mapper(componentModel = "spring")
 public interface DepartementMapper {
 
-    @Mapping(target = "manager", source = "manager", qualifiedByName = "toEmployeeShort")
+    @Mapping(target = "manager", source = "manager")
     @Mapping(target = "parentDepartement", source = "parentDepartement", qualifiedByName = "toDepartementShort")
     DepartementDTO toDto(Departement departement);
 
@@ -21,21 +21,25 @@ public interface DepartementMapper {
     DepartementShortDTO toShortDto(Departement departement);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "manager", source = "managerId", qualifiedByName = "employeeFromId")
-    @Mapping(target = "parentDepartement", source = "parentDepartementId", qualifiedByName = "departementFromId")
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "manager", source = "managerId")
+    @Mapping(target = "parentDepartement", source = "parentDepartementId")
     Departement toEntity(DepartementCreateDTO dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "manager", source = "managerId", qualifiedByName = "employeeFromId")
-    @Mapping(target = "parentDepartement", source = "parentDepartementId", qualifiedByName = "departementFromId")
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "manager", source = "managerId")
+    @Mapping(target = "parentDepartement", source = "parentDepartementId")
     void updateEntityFromDto(DepartementUpdateDTO dto, @MappingTarget Departement departement);
 
-    @Named("departementFromId")
-    default Departement departementFromId(Long id) {
+    // Méthodes de conversion pour les mappings
+    default Departement mapToDepartement(Long id) {
         if (id == null) {
             return null;
         }
@@ -44,14 +48,26 @@ public interface DepartementMapper {
         return departement;
     }
 
-    @Named("employeeFromId")
-    default Employee employeeFromId(Long id) {
+    default Employee mapToEmployee(Long id) {
         if (id == null) {
             return null;
         }
         Employee employee = new Employee();
         employee.setId(id);
         return employee;
+    }
+
+    // Conversion de Employee vers EmployeeShortDTO
+    default EmployeeShortDTO mapToEmployeeShortDTO(Employee employee) {
+        if (employee == null) {
+            return null;
+        }
+
+        return EmployeeShortDTO.builder()
+                .id(employee.getId())
+                .firstName(employee.getFirstName())
+                .lastName(employee.getLastName())
+                .build();
     }
 
     /**
@@ -80,11 +96,7 @@ public interface DepartementMapper {
         treeDTO.setActive(dept.getActive());
 
         if (dept.getManager() != null) {
-            EmployeeShortDTO managerDTO = new EmployeeShortDTO();
-            managerDTO.setId(dept.getManager().getId());
-            managerDTO.setFirstName(dept.getManager().getFirstName());
-            managerDTO.setLastName(dept.getManager().getLastName());
-            treeDTO.setManager(managerDTO);
+            treeDTO.setManager(mapToEmployeeShortDTO(dept.getManager()));
         }
 
         // Récupérer tous les départements enfants

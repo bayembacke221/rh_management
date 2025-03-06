@@ -7,6 +7,7 @@ import sn.bmbacke.rh.entity.Departement;
 import sn.bmbacke.rh.entity.Employee;
 import sn.bmbacke.rh.entity.Position;
 
+
 @Mapper(componentModel = "spring",
         uses = {DepartementMapper.class, PositionMapper.class})
 public interface EmployeeMapper {
@@ -20,28 +21,32 @@ public interface EmployeeMapper {
     EmployeeShortDTO toShortDto(Employee employee);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "departement", source = "departementId", qualifiedByName = "departementFromId")
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "departement", source = "departementId", qualifiedByName = "employeeMapperDepartementFromId")
     @Mapping(target = "position", source = "positionId", qualifiedByName = "positionFromId")
-    @Mapping(target = "manager", source = "managerId", qualifiedByName = "employeeFromId")
+    @Mapping(target = "manager", source = "managerId", qualifiedByName = "employeeMapperEmployeeFromId")
     @Mapping(target = "user", ignore = true)
     Employee toEntity(EmployeeCreateDTO dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "hireDate", ignore = true)
     @Mapping(target = "endDate", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "cv", ignore = true)
-    @Mapping(target = "departement", source = "departementId", qualifiedByName = "departementFromId")
+    @Mapping(target = "departement", source = "departementId", qualifiedByName = "employeeMapperDepartementFromId")
     @Mapping(target = "position", source = "positionId", qualifiedByName = "positionFromId")
-    @Mapping(target = "manager", source = "managerId", qualifiedByName = "employeeFromId")
+    @Mapping(target = "manager", source = "managerId", qualifiedByName = "employeeMapperEmployeeFromId")
     @Mapping(target = "user", ignore = true)
     void updateEntityFromDto(EmployeeUpdateDTO dto, @MappingTarget Employee employee);
 
-    @Named("employeeFromId")
+    @Named("employeeMapperEmployeeFromId")
     default Employee employeeFromId(Long id) {
         if (id == null) {
             return null;
@@ -51,7 +56,7 @@ public interface EmployeeMapper {
         return employee;
     }
 
-    @Named("departementFromId")
+    @Named("employeeMapperDepartementFromId")
     default Departement departementFromId(Long id) {
         if (id == null) {
             return null;

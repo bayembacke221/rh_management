@@ -7,6 +7,7 @@ import sn.bmbacke.rh.entity.Contract;
 import sn.bmbacke.rh.entity.Document;
 import sn.bmbacke.rh.entity.Employee;
 
+
 @Mapper(componentModel = "spring")
 public interface DocumentMapper {
 
@@ -17,19 +18,23 @@ public interface DocumentMapper {
     DocumentShortDTO toShortDto(Document document);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "uploadDate", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "path", ignore = true)
     @Mapping(target = "size", ignore = true)
     @Mapping(target = "contentType", ignore = true)
-    @Mapping(target = "employee", source = "employeeId", qualifiedByName = "employeeFromId")
+    @Mapping(target = "employee", source = "employeeId", qualifiedByName = "documentMapperEmployeeFromId")
     @Mapping(target = "contract", source = "contractId", qualifiedByName = "contractFromId")
     Document toEntity(DocumentCreateDTO dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "uploadDate", ignore = true)
     @Mapping(target = "path", ignore = true)
     @Mapping(target = "size", ignore = true)
@@ -38,7 +43,7 @@ public interface DocumentMapper {
     @Mapping(target = "contract", ignore = true)
     void updateEntityFromDto(DocumentUpdateDTO dto, @MappingTarget Document document);
 
-    @Named("employeeFromId")
+    @Named("documentMapperEmployeeFromId")
     default Employee employeeFromId(Long id) {
         if (id == null) {
             return null;

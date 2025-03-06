@@ -23,21 +23,20 @@ spring:
     file:
       uploads:
         photos-output-path: ./uploads
+        allowed-mime-types:
+          diploma:
+            - application/pdf
+            - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+          identity:
+            - application/pdf
+            - image/jpeg
+            - image/png
+          cv:
+            - application/pdf
+            - application/vnd.openxmlformats-officedocument.wordprocessingml.document
   servlet:
     multipart:
       max-file-size: 10485760  # 10MB
-      allowed-mime-types:
-        diploma:
-          - application/pdf
-          - application/vnd.openxmlformats-officedocument.wordprocessingml.document
-        identity:
-          - application/pdf
-          - image/jpeg
-          - image/png
-        cv:
-          - application/pdf
-          - application/vnd.openxmlformats-officedocument.wordprocessingml.document
-
 
 server:
   port: 8088

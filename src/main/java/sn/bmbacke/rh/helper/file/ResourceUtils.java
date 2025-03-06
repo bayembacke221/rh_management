@@ -1,19 +1,25 @@
 package sn.bmbacke.rh.helper.file;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import sn.bmbacke.rh.config.FileConfigProperties;
 import sn.bmbacke.rh.entity.enums.DocEnum;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ResourceUtils {
+
+    private final FileConfigProperties fileConfigProperties;
 
     private static final Map<String, String> MIME_TYPES = new HashMap<>();
 
@@ -75,13 +81,16 @@ public class ResourceUtils {
             return false;
         }
 
-        return switch (docType) {
-            case CV, DIPLOMA, ADMINISTRATIVE, CERTIFICATE, PAYSLIP, CONTRACT -> contentType.equals("application/pdf") ||
-                    contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-            case IDENTITY -> contentType.equals("application/pdf") ||
-                    contentType.equals("image/jpeg") ||
-                    contentType.equals("image/png");
-            default -> true;
-        };
+        // Récupérer les types MIME autorisés depuis la configuration
+        Map<String, List<String>> allowedMimeTypes = fileConfigProperties.getUploads().getAllowedMimeTypes();
+
+        String docTypeKey = docType.name().toLowerCase();
+        if (allowedMimeTypes.containsKey(docTypeKey)) {
+            List<String> allowedTypes = allowedMimeTypes.get(docTypeKey);
+            return allowedTypes.contains(contentType);
+        }
+
+        // Type de document non configuré, on accepte tout
+        return true;
     }
 }

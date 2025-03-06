@@ -50,4 +50,9 @@ public interface EmployeeRepository extends GenericRepository<Employee, Long> {
      * Vérifie si un employé appartient à un département
      */
     boolean existsByDepartement_Id(Long departementId);
+
+    /**
+     * Cette méthode doit être ajoutée à l'interface EmployeeRepository
+     */
+    boolean existsByPosition_Id(Long positionId);
 }

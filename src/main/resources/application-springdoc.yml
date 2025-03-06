@@ -1,3 +1,11 @@
 springdoc:
-  swagger-ui.path: /openapi/swagger-ui.html
-  api-docs.path: /openapi/api-docs
+  api-docs:
+    path: /openapi/api-docs
+  swagger-ui:
+    path: /openapi/swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    filter: true
+  packages-to-scan: sn.bmbacke.rh.controller
+  show-actuator: false
+  default-produces-media-type: application/json

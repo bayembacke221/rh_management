@@ -57,7 +57,7 @@ public class DocumentController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<DocumentDTO> getDocumentById(
-            @Parameter(description = "ID du document") @PathVariable Long id) {
+            @Parameter(description = "ID du document") @PathVariable("id")  Long id) {
         return ResponseEntity.ok(documentService.getDocumentById(id));
     }
 
@@ -68,7 +68,7 @@ public class DocumentController {
     })
     @GetMapping("/{id}/content")
     public ResponseEntity<Resource> getDocumentContent(
-            @Parameter(description = "ID du document") @PathVariable Long id) {
+            @Parameter(description = "ID du document") @PathVariable("id")  Long id) {
         DocumentDTO document = documentService.getDocumentById(id);
         Resource resource = documentService.getDocumentContent(id);
 
@@ -86,7 +86,7 @@ public class DocumentController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<DocumentDTO> updateDocument(
-            @Parameter(description = "ID du document") @PathVariable Long id,
+            @Parameter(description = "ID du document") @PathVariable("id")  Long id,
             @RequestBody DocumentUpdateDTO updateDTO) {
         return ResponseEntity.ok(documentService.updateDocument(id, updateDTO));
     }
@@ -98,7 +98,7 @@ public class DocumentController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDocument(
-            @Parameter(description = "ID du document") @PathVariable Long id) {
+            @Parameter(description = "ID du document") @PathVariable("id")  Long id) {
         documentService.deleteDocument(id);
         return ResponseEntity.noContent().build();
     }
@@ -113,7 +113,7 @@ public class DocumentController {
     @Operation(summary = "Récupérer les documents par type", description = "Retourne tous les documents d'un type spécifique")
     @GetMapping("/types/{type}")
     public ResponseEntity<List<DocumentShortDTO>> getDocumentsByType(
-            @Parameter(description = "Type de document") @PathVariable DocEnum type) {
+            @Parameter(description = "Type de document") @PathVariable("type")  DocEnum type) {
         return ResponseEntity.ok(documentService.getDocumentsByType(type));
     }
 
@@ -132,7 +132,7 @@ public class DocumentController {
     })
     @PostMapping("/employees/{employeeId}")
     public ResponseEntity<DocumentDTO> uploadEmployeeDocument(
-            @Parameter(description = "ID de l'employé") @PathVariable Long employeeId,
+            @Parameter(description = "ID de l'employé") @PathVariable("employeeId") Long employeeId,
             @Parameter(description = "Fichier à uploader") @RequestParam("file") MultipartFile file,
             @Parameter(description = "Type de document") @RequestParam("type") DocEnum type,
             @Parameter(description = "Nom du document (optionnel)") @RequestParam(value = "name", required = false) String name) {
@@ -149,15 +149,15 @@ public class DocumentController {
     @Operation(summary = "Récupérer les documents d'un employé", description = "Retourne tous les documents associés à un employé")
     @GetMapping("/employees/{employeeId}")
     public ResponseEntity<List<DocumentShortDTO>> getEmployeeDocuments(
-            @Parameter(description = "ID de l'employé") @PathVariable Long employeeId) {
+            @Parameter(description = "ID de l'employé") @PathVariable("employeeId") Long employeeId) {
         return ResponseEntity.ok(documentService.getEmployeeDocuments(employeeId));
     }
 
     @Operation(summary = "Télécharger le contenu d'un document d'employé", description = "Télécharge le fichier d'un document associé à un employé")
     @GetMapping("/employees/{employeeId}/{documentId}/content")
     public ResponseEntity<Resource> getEmployeeDocumentContent(
-            @Parameter(description = "ID de l'employé") @PathVariable Long employeeId,
-            @Parameter(description = "ID du document") @PathVariable Long documentId) {
+            @Parameter(description = "ID de l'employé") @PathVariable("employeeId") Long employeeId,
+            @Parameter(description = "ID du document") @PathVariable("documentId") Long documentId) {
 
         DocumentDTO document = documentService.getDocumentById(documentId);
         Resource resource = documentService.getDocumentContent(documentId);
@@ -177,7 +177,7 @@ public class DocumentController {
     })
     @PostMapping("/contracts/{contractId}")
     public ResponseEntity<DocumentDTO> uploadContractDocument(
-            @Parameter(description = "ID du contrat") @PathVariable Long contractId,
+            @Parameter(description = "ID du contrat") @PathVariable("contractId") Long contractId,
             @Parameter(description = "Fichier à uploader") @RequestParam("file") MultipartFile file,
             @Parameter(description = "Type de document") @RequestParam("type") DocEnum type,
             @Parameter(description = "Nom du document (optionnel)") @RequestParam(value = "name", required = false) String name) {
@@ -194,7 +194,7 @@ public class DocumentController {
     @Operation(summary = "Récupérer les documents d'un contrat", description = "Retourne tous les documents associés à un contrat")
     @GetMapping("/contracts/{contractId}")
     public ResponseEntity<List<DocumentShortDTO>> getContractDocuments(
-            @Parameter(description = "ID du contrat") @PathVariable Long contractId) {
+            @Parameter(description = "ID du contrat") @PathVariable("contractId") Long contractId) {
         return ResponseEntity.ok(documentService.getContractDocuments(contractId));
     }
 }

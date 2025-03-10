@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 public class OpenApiConfig {
@@ -31,7 +32,7 @@ public class OpenApiConfig {
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
-                .servers(Arrays.asList(
+                .servers(Collections.singletonList(
                         new Server().url("/api/v1").description("Serveur par défaut")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))

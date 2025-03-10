@@ -2,6 +2,8 @@ package sn.bmbacke.rh.service.impl;
 
 
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.data.domain.Page;
@@ -208,8 +210,12 @@ public class ContractServiceImpl implements ContractService {
             // Créer un nouveau document Word
             XWPFDocument document = new XWPFDocument();
 
-            // Ajouter un en-tête avec logo (à remplacer par votre logo)
+            // En-tête
             XWPFHeader header = document.createHeader(HeaderFooterType.DEFAULT);
+            // en-tête avec logo
+            header.createParagraph().createRun().addPicture(getClass().getResourceAsStream("/logo.png"),
+                    XWPFDocument.PICTURE_TYPE_PNG, "logo.png", Units.toEMU(100), Units.toEMU(100));
+
             XWPFParagraph headerParagraph = header.createParagraph();
             headerParagraph.setAlignment(ParagraphAlignment.CENTER);
             XWPFRun headerRun = headerParagraph.createRun();
@@ -343,6 +349,8 @@ public class ContractServiceImpl implements ContractService {
             return outputStream.toByteArray();
         } catch (IOException e) {
             throw new BusinessException("Erreur lors de la génération du document de contrat: " + e.getMessage());
+        } catch (InvalidFormatException e) {
+            throw new RuntimeException(e);
         }
     }
 

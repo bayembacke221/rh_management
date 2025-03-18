@@ -73,4 +73,6 @@ public interface EmployeeService {
      * Récupère les statistiques des employés par département
      */
     List<DepartmentEmployeeStatsDTO> getEmployeeStatsByDepartment();
+
+
 }

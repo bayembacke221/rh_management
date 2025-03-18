@@ -152,7 +152,8 @@ public class ContractController {
     @Operation(summary = "Récupérer les contrats qui expirent bientôt", description = "Retourne les contrats qui expirent dans les prochains jours")
     @GetMapping("/expiring")
     public ResponseEntity<List<ContractDTO>> getExpiringContracts(
-            @Parameter(description = "Nombre de jours avant expiration") @RequestParam(defaultValue = "30") int days) {
+            @Parameter(description = "Nombre de jours avant expiration")
+            @RequestParam(value = "days", defaultValue = "30") int days) {
         return ResponseEntity.ok(contractService.getExpiringContracts(days));
     }
 

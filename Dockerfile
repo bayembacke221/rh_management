@@ -1,5 +1,5 @@
 # Étape de build
-FROM openjdk:24-ea-21-slim-bookworm AS build
+FROM openjdk:21-slim AS build
 WORKDIR /app
 
 # Copier les fichiers du projet
@@ -12,7 +12,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew build --no-daemon
 
 # Étape de l'application
-FROM openjdk:24-ea-21-slim-bookworm
+FROM openjdk:21-slim
 VOLUME /main-app
 WORKDIR /app
 

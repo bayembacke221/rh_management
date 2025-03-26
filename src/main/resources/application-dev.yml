@@ -2,13 +2,13 @@ spring:
   config:
     import: classpath:application-springdoc.yml
   datasource:
-    url: jdbc:postgresql://localhost:5432/rh_management
-    username: mbacke
-    password: mbacke
+    url: jdbc:postgresql://dpg-cvfsielumphs73dca7dg-a.oregon-postgres.render.com:5432/exam_management_qaim
+    username: exam_management_qaim_user
+    password: 7Phh7G7bEQA1vptvZzPDy6aK8Dm8uvGR
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:

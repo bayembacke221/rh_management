@@ -9,7 +9,7 @@ COPY . .
 RUN chmod +x ./gradlew
 
 # Exécuter le build Gradle
-RUN ./gradlew build --no-daemon
+RUN ./gradlew clean build -x test
 
 # Étape de l'application
 FROM eclipse-temurin:17-jre-jammy

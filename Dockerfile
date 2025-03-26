@@ -1,5 +1,5 @@
 # Étape de build
-FROM openjdk:21-slim AS build
+FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 
 # Copier les fichiers du projet
@@ -12,7 +12,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew build --no-daemon
 
 # Étape de l'application
-FROM openjdk:21-slim
+FROM eclipse-temurin:17-jre-jammy
 VOLUME /main-app
 WORKDIR /app
 

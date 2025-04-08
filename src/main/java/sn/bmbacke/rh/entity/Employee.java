@@ -18,9 +18,9 @@ import java.time.LocalDate;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Employee extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(name = "first_name", columnDefinition = "VARCHAR(255)")
     private String firstName;
-    @Column(nullable = false)
+    @Column(name = "last_name", columnDefinition = "VARCHAR(255)")
     private String lastName;
     @Column(nullable = true)
     private String phone;

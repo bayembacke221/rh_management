@@ -117,9 +117,9 @@ public class EmployeeController {
     @Operation(summary = "Rechercher des employés",
             description = "Recherche des employés selon différents critères")
     public ResponseEntity<Page<EmployeeDTO>> searchEmployees(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Status status,
-            @RequestParam(required = false) Long departmentId,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "status", required = false) Status status,
+            @RequestParam(name = "departmentId", required = false) Long departmentId,
             @PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.ok(employeeService.searchEmployees(keyword, status, departmentId, pageable));
     }

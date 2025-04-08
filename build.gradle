@@ -61,6 +61,7 @@ tasks.named('test') {
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
             '-Amapstruct.defaultComponentModel=spring',
-            '-Amapstruct.unmappedTargetPolicy=IGNORE'
+            '-Amapstruct.unmappedTargetPolicy=IGNORE',
+            '-parameters'
     ]
 }

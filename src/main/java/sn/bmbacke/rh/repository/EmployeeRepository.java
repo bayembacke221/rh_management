@@ -38,8 +38,8 @@ public interface EmployeeRepository extends GenericRepository<Employee, Long> {
             "(:status IS NULL OR e.status = :status) AND " +
             "(:departementId IS NULL OR e.departement.id = :departementId) AND " +
             "(:keyword IS NULL OR " +
-            "e.firstName LIKE CONCAT('%', :keyword, '%') OR " +
-            "e.lastName LIKE CONCAT('%', :keyword, '%'))")
+            "CAST(e.firstName AS string) LIKE CONCAT('%', CAST(:keyword AS string), '%') OR " +
+            "CAST(e.lastName AS string) LIKE CONCAT('%', CAST(:keyword AS string), '%'))")
     Page<Employee> searchEmployees(
             @Param("keyword") String keyword,
             @Param("status") Status status,

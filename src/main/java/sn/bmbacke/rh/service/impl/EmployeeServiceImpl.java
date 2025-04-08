@@ -178,7 +178,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public Page<EmployeeDTO> searchEmployees(String keyword, Status status, Long departementId, Pageable pageable) {
-        return employeeRepository.searchEmployees(keyword, status, departementId, pageable)
+        String sanitizedKeyword = keyword != null ? keyword.toString() : null;
+
+        return employeeRepository.searchEmployees(sanitizedKeyword, status, departementId, pageable)
                 .map(employeeMapper::toDto);
     }
 

@@ -3,6 +3,7 @@ package sn.bmbacke.rh.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sn.bmbacke.rh.payload.dto.*;
@@ -13,6 +14,7 @@ import sn.bmbacke.rh.payload.mapper.PositionMapper;
 import sn.bmbacke.rh.repository.DepartmentRepository;
 import sn.bmbacke.rh.repository.EmployeeRepository;
 import sn.bmbacke.rh.repository.PositionRepository;
+import sn.bmbacke.rh.repository.specification.PositionSpecification;
 import sn.bmbacke.rh.service.PositionService;
 
 import java.math.BigDecimal;
@@ -166,7 +168,11 @@ public class PositionServiceImpl implements PositionService {
     @Override
     @Transactional(readOnly = true)
     public Page<PositionDTO> searchPositions(String keyword, Boolean active, Long departmentId, Pageable pageable) {
-        return positionRepository.searchPositions(keyword, active, departmentId, pageable)
+        Specification<Position> spec = Specification.where(PositionSpecification.hasKeyword(keyword))
+                .and(PositionSpecification.hasActiveStatus(active))
+                .and(PositionSpecification.belongsToDepartment(departmentId));
+
+        return positionRepository.findAll(spec, pageable)
                 .map(positionMapper::toDto);
     }
 

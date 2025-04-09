@@ -32,21 +32,6 @@ public interface PositionRepository extends GenericRepository<Position, Long> {
             BigDecimal minSalary, BigDecimal maxSalary);
 
     /**
-     * Recherche des positions par titre ou description
-     */
-    @Query("SELECT p FROM Position p WHERE " +
-            "(:keyword IS NULL OR " +
-            "LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-            "(:active IS NULL OR p.active = :active) AND " +
-            "(:departmentId IS NULL OR p.department.id = :departmentId)")
-    Page<Position> searchPositions(
-            @Param("keyword") String keyword,
-            @Param("active") Boolean active,
-            @Param("departmentId") Long departmentId,
-            Pageable pageable);
-
-    /**
      * Vérifie si une position avec ce titre existe déjà (sauf celle avec l'ID spécifié)
      */
     boolean existsByTitleAndIdNot(String title, Long id);

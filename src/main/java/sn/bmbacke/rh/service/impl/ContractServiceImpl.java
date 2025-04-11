@@ -22,6 +22,7 @@ import sn.bmbacke.rh.repository.ContractRepository;
 import sn.bmbacke.rh.repository.EmployeeRepository;
 import sn.bmbacke.rh.service.ContractService;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -210,11 +211,25 @@ public class ContractServiceImpl implements ContractService {
             // Créer un nouveau document Word
             XWPFDocument document = new XWPFDocument();
 
-            // En-tête
+            // Modify the header creation section in generateContractDocument method
             XWPFHeader header = document.createHeader(HeaderFooterType.DEFAULT);
-            // en-tête avec logo
-            header.createParagraph().createRun().addPicture(getClass().getResourceAsStream("/logo.png"),
-                    XWPFDocument.PICTURE_TYPE_PNG, "logo.png", Units.toEMU(100), Units.toEMU(100));
+            try {
+                try (InputStream logoStream = getClass().getResourceAsStream("/logo.jpg")) {
+                    if (logoStream != null) {
+                        header.createParagraph().createRun().addPicture(
+                                logoStream,
+                                XWPFDocument.PICTURE_TYPE_JPEG,
+                                "logo.jpg",
+                                Units.toEMU(100),
+                                Units.toEMU(100)
+                        );
+                    }
+                }
+            } catch (Exception e) {
+                // Log error but continue document generation without logo
+                System.err.println("Warning: Could not add logo to contract: " + e.getMessage());
+            }
+
 
             XWPFParagraph headerParagraph = header.createParagraph();
             headerParagraph.setAlignment(ParagraphAlignment.CENTER);
@@ -349,8 +364,6 @@ public class ContractServiceImpl implements ContractService {
             return outputStream.toByteArray();
         } catch (IOException e) {
             throw new BusinessException("Erreur lors de la génération du document de contrat: " + e.getMessage());
-        } catch (InvalidFormatException e) {
-            throw new RuntimeException(e);
         }
     }
 

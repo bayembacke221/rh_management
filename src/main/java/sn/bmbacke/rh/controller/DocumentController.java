@@ -177,10 +177,10 @@ public class DocumentController {
     })
     @PostMapping("/contracts/{contractId}")
     public ResponseEntity<DocumentDTO> uploadContractDocument(
-            @Parameter(description = "ID du contrat") @PathVariable("contractId") Long contractId,
-            @Parameter(description = "Fichier à uploader") @RequestParam("file") MultipartFile file,
-            @Parameter(description = "Type de document") @RequestParam("type") DocEnum type,
-            @Parameter(description = "Nom du document (optionnel)") @RequestParam(value = "name", required = false) String name) {
+            @PathVariable("contractId") Long contractId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("type") DocEnum type,
+            @RequestParam(value = "name", required = false) String name) {
 
         // Valider le type MIME
         if (!resourceUtils.isValidDocumentType(file, type)) {

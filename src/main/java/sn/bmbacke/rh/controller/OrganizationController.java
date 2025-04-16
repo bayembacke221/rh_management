@@ -43,7 +43,7 @@ public class OrganizationController {
     public ResponseEntity<DepartementTreeDTO> getDepartmentChart(
             @Parameter(description = "ID du département") @PathVariable Long departmentId) {
         // Récupérer tout l'arbre et filtrer le département demandé
-        // (implémentation simplifiée, vous pourriez créer une méthode dédiée dans le service)
+        // (implémentation simplifiée
         List<DepartementTreeDTO> tree = departementService.getDepartementTree();
         DepartementTreeDTO result = findDepartmentInTree(tree, departmentId);
 

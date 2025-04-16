@@ -56,7 +56,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     @Transactional(readOnly = true)
     public LeaveDTO getLeaveById(Long id) {
-        return leaveRepository.findById(id)
+        return leaveRepository.findLeaveWithBasicRelationsById(id)
                 .map(leaveMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Congé non trouvé avec l'ID : " + id));
     }
@@ -112,7 +112,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public LeaveDTO updateLeave(Long id, LeaveUpdateDTO leaveUpdateDTO) {
         // Vérifier que le congé existe
-        Leave existingLeave = leaveRepository.findById(id)
+        Leave existingLeave = leaveRepository.findLeaveWithBasicRelationsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Congé non trouvé avec l'ID : " + id));
 
         // Vérifier que le congé est toujours en attente
@@ -175,7 +175,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public LeaveDTO updateLeaveStatus(Long id, LeaveApprovalDTO leaveApprovalDTO, Long approverId) {
         // Vérifier que le congé existe
-        Leave existingLeave = leaveRepository.findById(id)
+        Leave existingLeave = leaveRepository.findLeaveWithBasicRelationsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Congé non trouvé avec l'ID : " + id));
 
         // Vérifier que le congé est en attente
@@ -213,7 +213,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public LeaveDTO cancelLeave(Long id) {
         // Vérifier que le congé existe
-        Leave existingLeave = leaveRepository.findById(id)
+        Leave existingLeave = leaveRepository.findLeaveWithBasicRelationsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Congé non trouvé avec l'ID : " + id));
 
         // Vérifier que le congé peut être annulé

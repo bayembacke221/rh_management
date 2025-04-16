@@ -10,6 +10,7 @@ import sn.bmbacke.rh.entity.enums.LeaveType;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository pour les demandes de congés
@@ -108,4 +109,7 @@ public interface LeaveRepository extends GenericRepository<Leave, Long> {
             @Param("employeeId") Long employeeId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT l FROM Leave l LEFT JOIN FETCH l.employee LEFT JOIN FETCH l.approvedBy WHERE l.id = :id")
+    Optional<Leave> findLeaveWithBasicRelationsById(@Param("id") Long id);
 }

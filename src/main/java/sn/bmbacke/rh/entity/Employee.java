@@ -9,7 +9,7 @@ import sn.bmbacke.rh.entity.enums.Status;
 
 import java.time.LocalDate;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "user")
 @Entity
 @Getter
 @Setter

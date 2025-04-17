@@ -20,7 +20,8 @@ import java.security.Principal;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-@EqualsAndHashCode(callSuper = true)
+
+@EqualsAndHashCode(callSuper = true, exclude = "employee")
 @Entity
 @Getter
 @Setter

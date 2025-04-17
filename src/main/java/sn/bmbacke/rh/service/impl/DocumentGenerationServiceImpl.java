@@ -368,6 +368,7 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
         List<String> lines = new ArrayList<>();
 
         if (data instanceof TurnoverReportDTO) {
+            // Existing implementation for TurnoverReportDTO
             TurnoverReportDTO report = (TurnoverReportDTO) data;
 
             // En-tête et résumé
@@ -407,14 +408,198 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
                         dept.getTurnoverRate());
             }
         } else if (data instanceof AbsenteeismReportDTO) {
-            // Implémentation à compléter
+            AbsenteeismReportDTO report = (AbsenteeismReportDTO) data;
+
+            // En-tête et résumé
+            lines.add("Rapport d'Absentéisme - " + report.getYear());
+            lines.add("");
+            lines.add("Résumé");
+            lines.add("Nombre total d'employés," + report.getTotalEmployees());
+            lines.add("Nombre total de jours ouvrables," + report.getTotalWorkingDays());
+            lines.add("Nombre total de jours d'absence," + report.getTotalAbsenceDays());
+            lines.add("Taux d'absentéisme (%)," + report.getAbsenteeismRate());
+            lines.add("");
+
+            // Absentéisme mensuel
+            lines.add("Absentéisme mensuel");
+            lines.add("Mois,Employés,Jours ouvrables,Jours d'absence,Taux (%)");
+
+            for (MonthlyAbsenteeismDTO monthly : report.getMonthlyAbsenteeism()) {
+                lines.add(monthly.getMonthName() + "," +
+                        monthly.getTotalEmployees() + "," +
+                        monthly.getWorkingDays() + "," +
+                        monthly.getAbsenceDays() + "," +
+                        monthly.getAbsenteeismRate());
+            }
+
+            lines.add("");
+
+            // Absentéisme par département
+            lines.add("Absentéisme par département");
+            lines.add("Département,Employés,Jours d'absence,Taux (%)");
+
+            for (DepartmentAbsenteeismDTO dept : report.getDepartmentAbsenteeism()) {
+                lines.add(dept.getDepartmentName() + "," +
+                        dept.getTotalEmployees() + "," +
+                        dept.getAbsenceDays() + "," +
+                        dept.getAbsenteeismRate());
+            }
+
+            lines.add("");
+
+            // Absentéisme par type de congé
+            lines.add("Répartition par type de congé");
+            lines.add("Type de congé,Jours d'absence,Pourcentage (%)");
+
+            for (LeaveTypeAbsenteeismDTO type : report.getLeaveTypeAbsenteeism()) {
+                lines.add(type.getLeaveTypeName() + "," +
+                        type.getAbsenceDays() + "," +
+                        type.getPercentageOfTotal());
+            }
+
         } else if (data instanceof SalaryCostReportDTO) {
-            // Implémentation à compléter
+            SalaryCostReportDTO report = (SalaryCostReportDTO) data;
+
+            // En-tête et résumé
+            lines.add("Rapport des Coûts Salariaux - " + report.getYear());
+            lines.add("");
+            lines.add("Résumé des coûts salariaux");
+            lines.add("Coût salarial total," + report.getTotalSalaryCost());
+            lines.add("Salaire moyen," + report.getAverageSalary());
+            lines.add("Salaire médian," + report.getMedianSalary());
+            lines.add("Salaire minimum," + report.getMinSalary());
+            lines.add("Salaire maximum," + report.getMaxSalary());
+            lines.add("");
+
+            // Coûts mensuels
+            lines.add("Coûts salariaux mensuels");
+            lines.add("Mois,Coût total (FCFA),Nombre d'employés,Salaire moyen (FCFA)");
+
+            for (MonthlySalaryCostDTO monthly : report.getMonthlyCosts()) {
+                lines.add(monthly.getMonthName() + "," +
+                        monthly.getTotalCost() + "," +
+                        monthly.getEmployeeCount() + "," +
+                        monthly.getAverageSalary());
+            }
+
+            lines.add("");
+
+            // Coûts par département
+            lines.add("Coûts salariaux par département");
+            lines.add("Département,Coût total (FCFA),Employés,Salaire moyen (FCFA),% du total");
+
+            for (DepartmentSalaryCostDTO dept : report.getDepartmentCosts()) {
+                lines.add(dept.getDepartmentName() + "," +
+                        dept.getTotalCost() + "," +
+                        dept.getEmployeeCount() + "," +
+                        dept.getAverageSalary() + "," +
+                        dept.getPercentageOfTotal());
+            }
+
+            lines.add("");
+
+            // Coûts par type de contrat
+            lines.add("Coûts par type de contrat");
+            lines.add("Type de contrat,Coût total (FCFA)");
+
+            for (Map.Entry<String, BigDecimal> entry : report.getCostByContractType().entrySet()) {
+                lines.add(entry.getKey() + "," + entry.getValue());
+            }
+
         } else if (data instanceof EmployeeDistributionReportDTO) {
-            // Implémentation à compléter
+            EmployeeDistributionReportDTO report = (EmployeeDistributionReportDTO) data;
+
+            // En-tête et résumé
+            lines.add("Rapport de Distribution des Employés");
+            lines.add("");
+            lines.add("Nombre total d'employés," + report.getTotalEmployees());
+            lines.add("");
+
+            // Distribution par statut
+            lines.add("Distribution par statut");
+            lines.add("Statut,Nombre d'employés");
+
+            for (Map.Entry<Status, Integer> entry : report.getStatusDistribution().entrySet()) {
+                lines.add(entry.getKey().name() + "," + entry.getValue());
+            }
+
+            lines.add("");
+
+            // Distribution par type de contrat
+            lines.add("Distribution par type de contrat");
+            lines.add("Type de contrat,Nombre d'employés");
+
+            for (Map.Entry<Type, Integer> entry : report.getContractTypeDistribution().entrySet()) {
+                lines.add(entry.getKey().name() + "," + entry.getValue());
+            }
+
+            lines.add("");
+
+            // Distribution par département
+            lines.add("Distribution par département");
+            lines.add("Département,Nombre d'employés");
+
+            for (Map.Entry<String, Integer> entry : report.getDepartmentDistribution().entrySet()) {
+                lines.add(entry.getKey() + "," + entry.getValue());
+            }
+
+            lines.add("");
+
+            // Distribution par poste
+            lines.add("Distribution par poste");
+            lines.add("Poste,Nombre d'employés");
+
+            for (Map.Entry<String, Integer> entry : report.getPositionDistribution().entrySet()) {
+                lines.add(entry.getKey() + "," + entry.getValue());
+            }
+
+            lines.add("");
+
+            // Distribution par genre
+            lines.add("Distribution par genre");
+            lines.add("Genre,Nombre,Pourcentage (%)");
+
+            GenderDistributionDTO genderDist = report.getGenderDistribution();
+            lines.add("Homme," + genderDist.getMaleCount() + "," + genderDist.getMalePercentage());
+            lines.add("Femme," + genderDist.getFemaleCount() + "," + genderDist.getFemalePercentage());
+
+            lines.add("");
+
+            // Distribution par âge
+            lines.add("Distribution par âge");
+            lines.add("Âge moyen," + report.getAgeDistribution().getAverageAge() + " ans");
+            lines.add("");
+            lines.add("Tranche d'âge,Nombre d'employés");
+
+            AgeDistributionDTO ageDist = report.getAgeDistribution();
+            lines.add("Moins de 25 ans," + ageDist.getUnder25Count());
+            lines.add("25-34 ans," + ageDist.getAge25to34Count());
+            lines.add("35-44 ans," + ageDist.getAge35to44Count());
+            lines.add("45-54 ans," + ageDist.getAge45to54Count());
+            lines.add("55 ans et plus," + ageDist.getAge55plusCount());
+
+            lines.add("");
+
+            // Distribution par ancienneté
+            lines.add("Distribution par ancienneté");
+            lines.add("Ancienneté moyenne," + report.getSeniorityDistribution().getAverageSeniority() + " années");
+            lines.add("");
+            lines.add("Ancienneté,Nombre d'employés");
+
+            SeniorityDistributionDTO seniorityDist = report.getSeniorityDistribution();
+            lines.add("Moins d'un an," + seniorityDist.getLessThan1YearCount());
+            lines.add("1-3 ans," + seniorityDist.getOneToThreeYearsCount());
+            lines.add("3-5 ans," + seniorityDist.getThreeToFiveYearsCount());
+            lines.add("5-10 ans," + seniorityDist.getFiveToTenYearsCount());
+            lines.add("Plus de 10 ans," + seniorityDist.getMoreThanTenYearsCount());
+
         } else {
             // Traitement générique
             lines.add("Données non prises en charge pour l'export CSV");
+
+            // Si possible, extraire quelques informations basiques
+            lines.add("Type de données: " + data.getClass().getSimpleName());
+            lines.add("Représentation: " + data.toString());
         }
 
         return lines;
@@ -536,11 +721,11 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
         Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
 
         document.add(new Paragraph("Résumé des coûts salariaux:", boldFont));
-        document.add(new Paragraph("Coût salarial total: " + report.getTotalSalaryCost() + " €", normalFont));
-        document.add(new Paragraph("Salaire moyen: " + report.getAverageSalary() + " €", normalFont));
-        document.add(new Paragraph("Salaire médian: " + report.getMedianSalary() + " €", normalFont));
-        document.add(new Paragraph("Salaire minimum: " + report.getMinSalary() + " €", normalFont));
-        document.add(new Paragraph("Salaire maximum: " + report.getMaxSalary() + " €", normalFont));
+        document.add(new Paragraph("Coût salarial total: " + report.getTotalSalaryCost() + " FCFA", normalFont));
+        document.add(new Paragraph("Salaire moyen: " + report.getAverageSalary() + " FCFA", normalFont));
+        document.add(new Paragraph("Salaire médian: " + report.getMedianSalary() + " FCFA", normalFont));
+        document.add(new Paragraph("Salaire minimum: " + report.getMinSalary() + " FCFA", normalFont));
+        document.add(new Paragraph("Salaire maximum: " + report.getMaxSalary() + " FCFA", normalFont));
         document.add(new Paragraph(" ", normalFont)); // Espace
 
         // Coûts mensuels
@@ -549,7 +734,7 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
         monthlyTable.setWidthPercentage(100);
 
         // En-têtes
-        addTableHeader(monthlyTable, Arrays.asList("Mois", "Coût total (€)", "Nombre d'employés", "Salaire moyen (€)"));
+        addTableHeader(monthlyTable, Arrays.asList("Mois", "Coût total (FCFA)", "Nombre d'employés", "Salaire moyen (FCFA)"));
 
         // Données
         for (MonthlySalaryCostDTO monthly : report.getMonthlyCosts()) {
@@ -568,7 +753,7 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
         deptTable.setWidthPercentage(100);
 
         // En-têtes
-        addTableHeader(deptTable, Arrays.asList("Département", "Coût total (€)", "Employés", "Salaire moyen (€)", "% du total"));
+        addTableHeader(deptTable, Arrays.asList("Département", "Coût total (FCFA)", "Employés", "Salaire moyen (FCFA)", "% du total"));
 
         // Données
         for (DepartmentSalaryCostDTO dept : report.getDepartmentCosts()) {
@@ -588,7 +773,7 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
         typeTable.setWidthPercentage(100);
 
         // En-têtes
-        addTableHeader(typeTable, Arrays.asList("Type de contrat", "Coût total (€)"));
+        addTableHeader(typeTable, Arrays.asList("Type de contrat", "Coût total (FCFA)"));
 
         // Données
         for (Map.Entry<String, BigDecimal> entry : report.getCostByContractType().entrySet()) {
@@ -966,23 +1151,23 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
 
         Row totalCostRow = sheet.createRow(rowNum++);
         totalCostRow.createCell(0).setCellValue("Coût salarial total:");
-        totalCostRow.createCell(1).setCellValue(report.getTotalSalaryCost().doubleValue() + " €");
+        totalCostRow.createCell(1).setCellValue(report.getTotalSalaryCost().doubleValue() + " FCFA");
 
         Row avgSalaryRow = sheet.createRow(rowNum++);
         avgSalaryRow.createCell(0).setCellValue("Salaire moyen:");
-        avgSalaryRow.createCell(1).setCellValue(report.getAverageSalary().doubleValue() + " €");
+        avgSalaryRow.createCell(1).setCellValue(report.getAverageSalary().doubleValue() + " FCFA");
 
         Row medianSalaryRow = sheet.createRow(rowNum++);
         medianSalaryRow.createCell(0).setCellValue("Salaire médian:");
-        medianSalaryRow.createCell(1).setCellValue(report.getMedianSalary().doubleValue() + " €");
+        medianSalaryRow.createCell(1).setCellValue(report.getMedianSalary().doubleValue() + " FCFA");
 
         Row minSalaryRow = sheet.createRow(rowNum++);
         minSalaryRow.createCell(0).setCellValue("Salaire minimum:");
-        minSalaryRow.createCell(1).setCellValue(report.getMinSalary().doubleValue() + " €");
+        minSalaryRow.createCell(1).setCellValue(report.getMinSalary().doubleValue() + " FCFA");
 
         Row maxSalaryRow = sheet.createRow(rowNum++);
         maxSalaryRow.createCell(0).setCellValue("Salaire maximum:");
-        maxSalaryRow.createCell(1).setCellValue(report.getMaxSalary().doubleValue() + " €");
+        maxSalaryRow.createCell(1).setCellValue(report.getMaxSalary().doubleValue() + " FCFA");
 
         rowNum++; // Ligne vide
 
@@ -991,7 +1176,7 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
         monthlyTitleRow.createCell(0).setCellValue("Coûts salariaux mensuels:");
 
         Row monthlyHeaderRow = sheet.createRow(rowNum++);
-        String[] monthlyHeaders = {"Mois", "Coût total (€)", "Nombre d'employés", "Salaire moyen (€)"};
+        String[] monthlyHeaders = {"Mois", "Coût total (FCFA)", "Nombre d'employés", "Salaire moyen (FCFA)"};
         for (int i = 0; i < monthlyHeaders.length; i++) {
             Cell headerCell = monthlyHeaderRow.createCell(i);
             headerCell.setCellValue(monthlyHeaders[i]);
@@ -1025,7 +1210,7 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
         deptTitleRow.createCell(0).setCellValue("Coûts salariaux par département:");
 
         Row deptHeaderRow = sheet.createRow(rowNum++);
-        String[] deptHeaders = {"Département", "Coût total (€)", "Employés", "Salaire moyen (€)", "% du total"};
+        String[] deptHeaders = {"Département", "Coût total (FCFA)", "Employés", "Salaire moyen (FCFA)", "% du total"};
         for (int i = 0; i < deptHeaders.length; i++) {
             Cell headerCell = deptHeaderRow.createCell(i);
             headerCell.setCellValue(deptHeaders[i]);
@@ -1063,7 +1248,7 @@ public class DocumentGenerationServiceImpl implements DocumentGenerationService 
         typeTitleRow.createCell(0).setCellValue("Coûts par type de contrat:");
 
         Row typeHeaderRow = sheet.createRow(rowNum++);
-        String[] typeHeaders = {"Type de contrat", "Coût total (€)"};
+        String[] typeHeaders = {"Type de contrat", "Coût total (FCFA)"};
         for (int i = 0; i < typeHeaders.length; i++) {
             Cell headerCell = typeHeaderRow.createCell(i);
             headerCell.setCellValue(typeHeaders[i]);

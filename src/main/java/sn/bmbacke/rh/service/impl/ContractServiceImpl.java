@@ -8,6 +8,7 @@ import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sn.bmbacke.rh.payload.dto.*;
@@ -20,6 +21,7 @@ import sn.bmbacke.rh.exception.ResourceNotFoundException;
 import sn.bmbacke.rh.payload.mapper.ContractMapper;
 import sn.bmbacke.rh.repository.ContractRepository;
 import sn.bmbacke.rh.repository.EmployeeRepository;
+import sn.bmbacke.rh.repository.specification.ContractSpecification;
 import sn.bmbacke.rh.service.ContractService;
 
 import java.io.InputStream;
@@ -418,8 +420,15 @@ public class ContractServiceImpl implements ContractService {
     public Page<ContractDTO> searchContracts(String keyword, Type type,
                                              ContratStatus status, LocalDate startDateMin,
                                              LocalDate startDateMax, Pageable pageable) {
-        return contractRepository.searchContracts(keyword, type, status, startDateMin, startDateMax, pageable)
-                .map(contractMapper::toDto);
+
+        Specification<Contract> spec = Specification
+                .where(ContractSpecification.hasKeyword(keyword))
+                .and(ContractSpecification.hasType(type))
+                .and(ContractSpecification.hasStatus(status))
+                .and(ContractSpecification.hasStartDateAfter(startDateMin))
+                .and(ContractSpecification.hasStartDateBefore(startDateMax));
+
+        return contractRepository.findAll(spec, pageable).map(contractMapper::toDto);
     }
 
     /**

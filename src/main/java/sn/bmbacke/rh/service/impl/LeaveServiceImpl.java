@@ -11,6 +11,8 @@ import sn.bmbacke.rh.entity.LeaveBalance;
 import sn.bmbacke.rh.entity.LeavePolicy;
 import sn.bmbacke.rh.entity.enums.LeaveStatus;
 import sn.bmbacke.rh.entity.enums.LeaveType;
+import sn.bmbacke.rh.event.LeaveStatusChangedEvent;
+import sn.bmbacke.rh.event.SystemEventPublisher;
 import sn.bmbacke.rh.exception.BusinessException;
 import sn.bmbacke.rh.exception.ResourceNotFoundException;
 import sn.bmbacke.rh.payload.dto.*;
@@ -45,6 +47,7 @@ public class LeaveServiceImpl implements LeaveService {
     private final LeaveBalanceService leaveBalanceService;
     private final LeavePolicyService leavePolicyService;
     private final LeaveMapper leaveMapper;
+    private final SystemEventPublisher eventPublisher;
 
     @Override
     @Transactional(readOnly = true)
@@ -105,6 +108,19 @@ public class LeaveServiceImpl implements LeaveService {
         // Conversion et sauvegarde
         Leave leave = leaveMapper.toEntity(leaveCreateDTO);
         Leave savedLeave = leaveRepository.save(leave);
+
+        // Publier un événement pour la notification
+        LeaveStatusChangedEvent event = LeaveStatusChangedEvent.builder()
+                .leaveId(savedLeave.getId())
+                .employeeId(savedLeave.getEmployee().getId())
+                .managerId(null)
+                .oldStatus(null)
+                .newStatus(savedLeave.getStatus())
+                .eventTime(LocalDateTime.now())
+                .triggeredBy(savedLeave.getEmployee().getId())
+                .build();
+
+        eventPublisher.publishEvent(event);
 
         return leaveMapper.toDto(savedLeave);
     }
@@ -187,6 +203,9 @@ public class LeaveServiceImpl implements LeaveService {
         Employee approver = employeeRepository.findById(approverId)
                 .orElseThrow(() -> new ResourceNotFoundException("Approbateur non trouvé avec l'ID : " + approverId));
 
+        // Garder l'ancien statut pour l'événement
+        LeaveStatus oldStatus = existingLeave.getStatus();
+
         // Mise à jour du statut
         leaveMapper.updateApprovalFromDto(leaveApprovalDTO, existingLeave);
         existingLeave.setApprovedBy(approver);
@@ -207,6 +226,20 @@ public class LeaveServiceImpl implements LeaveService {
         }
 
         Leave updatedLeave = leaveRepository.save(existingLeave);
+
+        // Publier un événement pour la notification
+        LeaveStatusChangedEvent event = LeaveStatusChangedEvent.builder()
+                .leaveId(updatedLeave.getId())
+                .employeeId(updatedLeave.getEmployee().getId())
+                .managerId(approverId)
+                .oldStatus(oldStatus)
+                .newStatus(updatedLeave.getStatus())
+                .eventTime(LocalDateTime.now())
+                .triggeredBy(approverId)
+                .build();
+
+        eventPublisher.publishEvent(event);
+
         return leaveMapper.toDto(updatedLeave);
     }
 
@@ -220,6 +253,9 @@ public class LeaveServiceImpl implements LeaveService {
         if (existingLeave.getStatus() != LeaveStatus.PENDING && existingLeave.getStatus() != LeaveStatus.APPROVED) {
             throw new BusinessException("Seules les demandes en attente ou approuvées peuvent être annulées");
         }
+
+        // Garder l'ancien statut pour l'événement
+        LeaveStatus oldStatus = existingLeave.getStatus();
 
         // Si le congé était approuvé, restaurer le solde
         if (existingLeave.getStatus() == LeaveStatus.APPROVED) {
@@ -239,6 +275,19 @@ public class LeaveServiceImpl implements LeaveService {
         // Mettre à jour le statut
         existingLeave.setStatus(LeaveStatus.CANCELLED);
         Leave updatedLeave = leaveRepository.save(existingLeave);
+
+        // Publier un événement pour la notification
+        LeaveStatusChangedEvent event = LeaveStatusChangedEvent.builder()
+                .leaveId(updatedLeave.getId())
+                .employeeId(updatedLeave.getEmployee().getId())
+                .managerId(updatedLeave.getApprovedBy() != null ? updatedLeave.getApprovedBy().getId() : null)
+                .oldStatus(oldStatus)
+                .newStatus(updatedLeave.getStatus())
+                .eventTime(LocalDateTime.now())
+                .triggeredBy(updatedLeave.getEmployee().getId())
+                .build();
+
+        eventPublisher.publishEvent(event);
 
         return leaveMapper.toDto(updatedLeave);
     }
@@ -302,7 +351,7 @@ public class LeaveServiceImpl implements LeaveService {
         return employeeLeaves.stream()
                 .filter(leave -> !leave.getStatus().equals(LeaveStatus.REJECTED) &&
                         !leave.getStatus().equals(LeaveStatus.CANCELLED))
-                .filter(leave -> excludeLeaveId == null || !leave.getId().equals(excludeLeaveId))
+                .filter(leave -> !leave.getId().equals(excludeLeaveId))
                 .anyMatch(leave -> {
                     // Vérifier si les périodes se chevauchent
                     return (startDate.isBefore(leave.getEndDate()) || startDate.isEqual(leave.getEndDate())) &&

@@ -15,9 +15,13 @@ import sn.bmbacke.rh.payload.mapper.NotificationMapper;
 import sn.bmbacke.rh.repository.EmployeeRepository;
 import sn.bmbacke.rh.repository.NotificationRepository;
 import sn.bmbacke.rh.service.NotificationService;
+import sn.bmbacke.rh.websocket.NotificationWebSocketService;
+import sn.bmbacke.rh.websocket.WebSocketNotificationDTO;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final EmployeeRepository employeeRepository;
     private final NotificationMapper notificationMapper;
+    private final NotificationWebSocketService webSocketService;
 
     @Override
     @Transactional(readOnly = true)
@@ -118,7 +123,32 @@ public class NotificationServiceImpl implements NotificationService {
         // Sauvegarder la notification
         Notification savedNotification = notificationRepository.save(notification);
 
-        return notificationMapper.toDto(savedNotification);
+        // Convertir en DTO pour la réponse
+        NotificationDTO notificationDTO = notificationMapper.toDto(savedNotification);
+
+        // Envoyer la notification via WebSocket
+        WebSocketNotificationDTO webSocketDTO = webSocketService.convertToWebSocketDTO(savedNotification);
+
+        if (createDTO.isSystemWide()) {
+            // Si c'est une notification système, la diffuser à tous les utilisateurs
+            webSocketService.broadcastNotification(webSocketDTO);
+        } else if (createDTO.getRecipientIds() != null && !createDTO.getRecipientIds().isEmpty()) {
+            // Sinon, l'envoyer à chaque destinataire
+            for (Long employeeId : createDTO.getRecipientIds()) {
+                // Récupérer l'ID de l'utilisateur correspondant à cet employé
+                employeeRepository.findById(employeeId).ifPresent(employee -> {
+                    if (employee.getUser() != null) {
+                        webSocketService.sendNotificationToUser(employee.getUser().getId(), webSocketDTO);
+
+                        // Mettre à jour le compteur de notifications non lues
+                        Long unreadCount = countUnreadNotificationsForEmployee(employeeId);
+                        webSocketService.sendUnreadCountToUser(employee.getUser().getId(), unreadCount);
+                    }
+                });
+            }
+        }
+
+        return notificationDTO;
     }
 
     @Override
@@ -144,6 +174,12 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationDTO dto = notificationMapper.toDtoWithReadStatus(updatedNotification, employee);
         dto.setRead(true);
 
+        // Mettre à jour le compteur de notifications non lues via WebSocket
+        if (employee.getUser() != null) {
+            Long unreadCount = countUnreadNotificationsForEmployee(employeeId);
+            webSocketService.sendUnreadCountToUser(employee.getUser().getId(), unreadCount);
+        }
+
         return dto;
     }
 
@@ -162,6 +198,11 @@ public class NotificationServiceImpl implements NotificationService {
             notification.markAsRead(employee);
             notificationRepository.save(notification);
         });
+
+        // Mettre à jour le compteur de notifications non lues via WebSocket
+        if (employee.getUser() != null) {
+            webSocketService.sendUnreadCountToUser(employee.getUser().getId(), 0L);
+        }
     }
 
     @Override
@@ -173,6 +214,7 @@ public class NotificationServiceImpl implements NotificationService {
         // Désactiver la notification
         notification.setActive(false);
         notificationRepository.save(notification);
+
     }
 
     @Override
@@ -185,5 +227,6 @@ public class NotificationServiceImpl implements NotificationService {
             notification.setActive(false);
             notificationRepository.save(notification);
         });
+
     }
 }

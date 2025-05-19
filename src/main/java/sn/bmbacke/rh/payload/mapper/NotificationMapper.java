@@ -3,9 +3,11 @@ package sn.bmbacke.rh.payload.mapper;
 import org.mapstruct.*;
 import sn.bmbacke.rh.entity.Employee;
 import sn.bmbacke.rh.entity.Notification;
+import sn.bmbacke.rh.payload.dto.EmployeeShortDTO;
 import sn.bmbacke.rh.payload.dto.NotificationCreateDTO;
 import sn.bmbacke.rh.payload.dto.NotificationDTO;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,8 +33,24 @@ public interface NotificationMapper {
     @Mapping(target = "active", constant = "true")
     Notification toEntity(NotificationCreateDTO dto);
 
+    @Named("toEmployeeShortList")
+    default List<EmployeeShortDTO> toEmployeeShortList(Set<Employee> employees) {
+        if (employees == null) {
+            return null;
+        }
+        return employees.stream()
+                .map(employee -> {
+                    EmployeeShortDTO dto = new EmployeeShortDTO();
+                    dto.setId(employee.getId());
+                    dto.setFirstName(employee.getFirstName());
+                    dto.setLastName(employee.getLastName());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
     @Named("toEmployeeSet")
-    default Set<Employee> toEmployeeSet(java.util.List<Long> ids) {
+    default Set<Employee> toEmployeeSet(List<Long> ids) {
         if (ids == null) {
             return null;
         }

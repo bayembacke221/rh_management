@@ -27,20 +27,29 @@ public class RhManagementApplication {
         SpringApplication.run(RhManagementApplication.class, args);
     }
 
+    private Role createRoleIfNotExists(RoleRepository roleRepository, String name) {
+        return roleRepository.findByName(name)
+                .orElseGet(() -> roleRepository.save(Role.builder().name(name).build()));
+    }
+
     @Bean
     public CommandLineRunner runner(RoleRepository roleRepository,
                                     UserRepository userRepository,
                                     EmployeeRepository employeeRepository,
                                     PasswordEncoder passwordEncoder) {
         return args -> {
-            if (roleRepository.findByName("ADMIN").isEmpty()) {
-                roleRepository.save(Role.builder().name("ADMIN").build());
+            createRoleIfNotExists(roleRepository, "HR");
+            createRoleIfNotExists(roleRepository, "MANAGER");
+            createRoleIfNotExists(roleRepository, "EMPLOYEE");
 
+            Role adminRole = createRoleIfNotExists(roleRepository, "ADMIN");
+
+            if (userRepository.findByEmail("admin@admin.com").isEmpty()) {
                 User adminUser = User.builder()
                         .email("admin@admin.com")
                         .username("admin@admin.com")
                         .password(passwordEncoder.encode("admin"))
-                        .roles(List.of(roleRepository.findByName("ADMIN").get()))
+                        .roles(List.of(adminRole))
                         .enabled(true)
                         .createdBy("System")
                         .build();
@@ -61,15 +70,6 @@ public class RhManagementApplication {
 
                 adminUser.setEmployee(adminEmployee);
                 userRepository.save(adminUser);
-            }
-            if (roleRepository.findByName("HR").isEmpty()) {
-                roleRepository.save(Role.builder().name("HR").build());
-            }
-            if (roleRepository.findByName("MANAGER").isEmpty()) {
-                roleRepository.save(Role.builder().name("MANAGER").build());
-            }
-            if (roleRepository.findByName("EMPLOYEE").isEmpty()) {
-                roleRepository.save(Role.builder().name("EMPLOYEE").build());
             }
         };
     }

@@ -1,5 +1,6 @@
 package sn.bmbacke.rh.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -7,15 +8,15 @@ import sn.bmbacke.rh.common.BaseEntity;
 
 import java.math.BigDecimal;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Getter
 @Setter
 @SuperBuilder
 @Table(name = "positions")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"department"})
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Position extends BaseEntity {
 
     @Column(nullable = false)
@@ -28,8 +29,9 @@ public class Position extends BaseEntity {
     private BigDecimal minSalary;
     @Column(nullable = false)
     private BigDecimal maxSalary;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departement_id")
+    @JsonIgnoreProperties({"manager", "parentDepartement"})
     private Departement department;
     @Column(nullable = true)
     private String responsibilities;

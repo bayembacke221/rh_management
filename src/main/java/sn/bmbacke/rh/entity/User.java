@@ -1,6 +1,7 @@
 package sn.bmbacke.rh.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -21,23 +22,24 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@EqualsAndHashCode(callSuper = true, exclude = "employee")
 @Entity
 @Getter
 @Setter
 @SuperBuilder
 @Table(name = "users")
-@Data
 @NoArgsConstructor
+@ToString(exclude = {"employee", "roles"})
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @EntityListeners(AuditingEntityListener.class)
 public class User extends BaseEntity implements UserDetails, Principal{
 
     private String username;
     private String password;
     private String email;
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn()
-    private  Employee employee;
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Employee employee;
     @ManyToMany(fetch = EAGER)
     @JsonBackReference
     private List<Role> roles;
@@ -92,7 +94,9 @@ public class User extends BaseEntity implements UserDetails, Principal{
         return enabled;
     }
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public String getFullName() {
+        if (this.employee == null) return this.email;
         return this.employee.getFirstName() + " " + this.employee.getLastName();
     }
 }

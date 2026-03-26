@@ -10,10 +10,16 @@ services:
     volumes:
       - postgres:/data/postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     restart: unless-stopped
 
-
+  maildev:
+    container_name: rh_management_maildev
+    image: maildev/maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    restart: unless-stopped
 
 volumes:
   postgres:

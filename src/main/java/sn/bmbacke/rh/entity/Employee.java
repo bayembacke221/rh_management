@@ -1,21 +1,27 @@
 package sn.bmbacke.rh.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import sn.bmbacke.rh.common.BaseEntity;
-import lombok.*;
 import sn.bmbacke.rh.entity.enums.Gender;
 import sn.bmbacke.rh.entity.enums.Status;
 
 import java.time.LocalDate;
 
-@EqualsAndHashCode(callSuper = true, exclude = "user")
 @Entity
 @Getter
 @Setter
 @SuperBuilder
 @Table(name = "employees")
-@Data @NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"departement", "position", "manager", "user"})
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Employee extends BaseEntity {
 
     @Column(name = "first_name", columnDefinition = "VARCHAR(255)")
@@ -50,17 +56,21 @@ public class Employee extends BaseEntity {
     @Column(nullable = true)
     @Enumerated(EnumType.STRING)
     private Status status;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departement_id")
+    @JsonIgnoreProperties({"manager", "parentDepartement"})
     private Departement departement;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "position_id")
+    @JsonIgnoreProperties({"department"})
     private Position position;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
+    @JsonIgnoreProperties({"departement", "position", "manager", "user"})
     private Employee manager;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 }
